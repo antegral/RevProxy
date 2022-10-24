@@ -76,7 +76,7 @@ func Init(mode int) error {
 }
 
 func IsFileExists(filename string) bool {
-	if _, err := os.Stat("/path/to/whatever"); err == nil {
+	if _, err := os.Stat(filename); err == nil {
 		return true
 	} else if errors.Is(err, os.ErrNotExist) {
 		return false
