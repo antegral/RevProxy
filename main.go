@@ -4,24 +4,27 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	Log "antegral.net/revproxy/src/Log"
 	ProxyModule "antegral.net/revproxy/src/Proxy"
 )
 
 var (
-	ListenPort string
-	ProxyTo    string
-	Password   string
+	ListenPort  string
+	ProxyTo     string
+	Password    string
+	LoggingMode int
 )
 
 func main() {
-	Log.Init()
-
 	flag.StringVar(&ListenPort, "listen", "", "Port to listen")
 	flag.StringVar(&ProxyTo, "address", "", "Address to proxy")
 	flag.StringVar(&Password, "password", "", "Header password (X-RevProxy-Token)")
+	flag.IntVar(&LoggingMode, "logging-mode", 1, "Logging mode")
 	flag.Parse()
+
+	Log.Init(LoggingMode)
 
 	Log.Info.Println("Starting RevProxy...")
 
@@ -35,9 +38,17 @@ func main() {
 
 	Log.Info.Print("ListenPort: ", ListenPort, " / ", "ProxyTo: ", ProxyTo)
 
-	if Proxy, err := ProxyModule.NewProxy(ProxyTo); err != nil {
+	ProxyUrl, err := url.Parse(ProxyTo)
+	if err != nil {
+		Log.Error.Panicln(err)
 	} else {
-		http.HandleFunc("/", ProxyModule.RequestHandler(Proxy, Password))
+		Log.Verbose.Print("Host: ", ProxyUrl.Hostname())
+	}
+
+	if Proxy, err := ProxyModule.NewProxy(ProxyTo); err != nil {
+		Log.Error.Panicln(err)
+	} else {
+		http.HandleFunc("/", ProxyModule.RequestHandler(Proxy, Password, ProxyUrl))
 		if err := http.ListenAndServe(fmt.Sprint(":", ListenPort), nil); err != nil {
 			Log.Error.Panicln(err)
 		}

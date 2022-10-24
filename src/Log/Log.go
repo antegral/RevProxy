@@ -16,7 +16,7 @@ var (
 	Error   *log.Logger
 )
 
-func Init() error {
+func Init(mode int) error {
 	Verbose = log.New(os.Stdout, "[VERBOSE] ", log.Ldate|log.Ltime|log.Lshortfile)
 	Info = log.New(os.Stdout, "[INFO] ", log.Ldate|log.Ltime|log.Lshortfile)
 	Warn = log.New(os.Stdout, "[WARNING] ", log.Ldate|log.Ltime|log.Lshortfile)
@@ -48,10 +48,29 @@ func Init() error {
 
 	Writer := io.MultiWriter(LogFile, os.Stdout)
 
-	Verbose.SetOutput(Writer)
-	Info.SetOutput(Writer)
-	Warn.SetOutput(Writer)
-	Error.SetOutput(Writer)
+	if mode < 1 {
+		panic("Invaild logging mode. (1, 2, 3, 4)")
+	}
+
+	if mode >= 1 {
+		Error.SetOutput(Writer)
+	}
+
+	if mode >= 2 {
+		Warn.SetOutput(Writer)
+	}
+
+	if mode >= 3 {
+		Info.SetOutput(Writer)
+	}
+
+	if mode >= 4 {
+		Verbose.SetOutput(Writer)
+	}
+
+	if mode > 4 {
+		Warn.Println("Logging mode is greater than 4. Logging mode is set to the maximum level.")
+	}
 
 	return nil
 }
