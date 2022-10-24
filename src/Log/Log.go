@@ -1,6 +1,7 @@
 package Log
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -56,9 +57,12 @@ func Init() error {
 }
 
 func IsFileExists(filename string) bool {
-	info, err := os.Stat(filename)
-	if os.IsNotExist(err) {
+	if _, err := os.Stat("/path/to/whatever"); err == nil {
+		return true
+	} else if errors.Is(err, os.ErrNotExist) {
 		return false
+	} else {
+		fmt.Println("Log System Initialization Error!")
+		panic(err)
 	}
-	return info.IsDir()
 }
