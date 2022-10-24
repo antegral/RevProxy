@@ -22,7 +22,8 @@ func RequestHandler(proxy *httputil.ReverseProxy, Password string, ProxyUrl *url
 	return func(w http.ResponseWriter, r *http.Request) {
 		PassHeader := r.Header.Get("X-RevProxy-Token")
 
-		r.Header.Add("Host", ProxyUrl.Hostname())
+		r.Header.Set("Host", ProxyUrl.Hostname())
+		r.Host = ProxyUrl.Hostname()
 
 		if len(Password) <= 0 {
 			Log.Info.Print("[", r.Method, "/OK] ", r.RemoteAddr, " > ", r.RequestURI)
