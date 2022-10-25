@@ -21,7 +21,7 @@ func main() {
 	flag.StringVar(&ListenPort, "listen", "", "Port to listen")
 	flag.StringVar(&ProxyTo, "address", "", "Address to proxy")
 	flag.StringVar(&Password, "password", "", "Header password (X-RevProxy-Token)")
-	flag.IntVar(&LoggingMode, "logging-mode", 1, "Logging mode")
+	flag.IntVar(&LoggingMode, "logging-mode", 3, "Logging mode")
 	flag.Parse()
 
 	Log.Init(LoggingMode)
