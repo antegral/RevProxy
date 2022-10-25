@@ -4,8 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -17,10 +19,10 @@ var (
 )
 
 func Init(mode int) error {
-	Verbose = log.New(os.Stdout, "[VERBOSE] ", log.Ldate|log.Ltime|log.Lshortfile)
-	Info = log.New(os.Stdout, "[INFO] ", log.Ldate|log.Ltime|log.Lshortfile)
-	Warn = log.New(os.Stdout, "[WARNING] ", log.Ldate|log.Ltime|log.Lshortfile)
-	Error = log.New(os.Stderr, "[ERROR] ", log.Ldate|log.Ltime|log.Lshortfile)
+	Verbose = log.New(ioutil.Discard, "[VERBOSE] ", log.Ldate|log.Ltime|log.Lshortfile)
+	Info = log.New(ioutil.Discard, "[INFO] ", log.Ldate|log.Ltime|log.Lshortfile)
+	Warn = log.New(ioutil.Discard, "[WARNING] ", log.Ldate|log.Ltime|log.Lshortfile)
+	Error = log.New(ioutil.Discard, "[ERROR] ", log.Ldate|log.Ltime|log.Lshortfile)
 
 	date := time.Now().Format("2006-01-02 15:04:05")
 	pwd, err := os.Getwd()
@@ -29,8 +31,10 @@ func Init(mode int) error {
 	}
 
 	// 경로 포맷팅
-	FolderPath := fmt.Sprint(pwd, "/logs")
-	FilePath := fmt.Sprint(pwd, "/logs/", date, ".log")
+	// FolderPath := fmt.Sprint(pwd, "/logs")
+	// FilePath := fmt.Sprint(pwd, "/logs/", date, ".log")
+	FolderPath := filepath.Join(pwd, "logs")
+	FilePath := filepath.Join(pwd, "logs", fmt.Sprint(date, ".log"))
 
 	os.MkdirAll(FolderPath, os.ModePerm)
 
@@ -53,18 +57,22 @@ func Init(mode int) error {
 	}
 
 	if mode >= 1 {
+		Error = log.New(os.Stderr, "[ERROR] ", log.Ldate|log.Ltime|log.Lshortfile)
 		Error.SetOutput(Writer)
 	}
 
 	if mode >= 2 {
+		Warn = log.New(os.Stdout, "[WARNING] ", log.Ldate|log.Ltime|log.Lshortfile)
 		Warn.SetOutput(Writer)
 	}
 
 	if mode >= 3 {
+		Info = log.New(os.Stdout, "[INFO] ", log.Ldate|log.Ltime|log.Lshortfile)
 		Info.SetOutput(Writer)
 	}
 
 	if mode >= 4 {
+		Verbose = log.New(os.Stdout, "[VERBOSE] ", log.Ldate|log.Ltime|log.Lshortfile)
 		Verbose.SetOutput(Writer)
 	}
 
