@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -19,12 +18,12 @@ var (
 )
 
 func Init(mode int) error {
-	Verbose = log.New(ioutil.Discard, "[VERBOSE] ", log.Ldate|log.Ltime|log.Lshortfile)
-	Info = log.New(ioutil.Discard, "[INFO] ", log.Ldate|log.Ltime|log.Lshortfile)
-	Warn = log.New(ioutil.Discard, "[WARNING] ", log.Ldate|log.Ltime|log.Lshortfile)
-	Error = log.New(ioutil.Discard, "[ERROR] ", log.Ldate|log.Ltime|log.Lshortfile)
+	Verbose = log.New(io.Discard, "[VERBOSE] ", log.Ldate|log.Ltime|log.Lshortfile)
+	Info = log.New(io.Discard, "[INFO] ", log.Ldate|log.Ltime|log.Lshortfile)
+	Warn = log.New(io.Discard, "[WARNING] ", log.Ldate|log.Ltime|log.Lshortfile)
+	Error = log.New(io.Discard, "[ERROR] ", log.Ldate|log.Ltime|log.Lshortfile)
 
-	date := time.Now().Format("2006-01-02 15:04:05")
+	date := time.Now().Format("2006-01-02_150405")
 	pwd, err := os.Getwd()
 	if err != nil {
 		return err // os.Getwd() 예외처리
