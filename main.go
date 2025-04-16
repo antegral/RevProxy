@@ -8,6 +8,7 @@ import (
 
 	Log "antegral.net/revproxy/src/Log"
 	ProxyModule "antegral.net/revproxy/src/Proxy"
+	"github.com/joho/godotenv"
 )
 
 var (
