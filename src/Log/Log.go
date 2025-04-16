@@ -52,31 +52,29 @@ func Init(mode int) error {
 	Writer := io.MultiWriter(LogFile, os.Stdout)
 
 	if mode < 1 {
-		panic("Invaild logging mode. (1, 2, 3, 4)")
+		panic("Invaild LOG_LEVEL. (1, 2, 3, 4)")
 	}
 
-	if mode >= 1 {
+	switch {
+	case mode >= 4:
+		Verbose = log.New(os.Stdout, "[VERBOSE] ", log.Ldate|log.Ltime|log.Lshortfile)
+		Verbose.SetOutput(Writer)
+		fallthrough
+	case mode >= 3:
+		Info = log.New(os.Stdout, "[INFO] ", log.Ldate|log.Ltime|log.Lshortfile)
+		Info.SetOutput(Writer)
+		fallthrough
+	case mode >= 2:
+		Warn = log.New(os.Stdout, "[WARNING] ", log.Ldate|log.Ltime|log.Lshortfile)
+		Warn.SetOutput(Writer)
+		fallthrough
+	case mode >= 1:
 		Error = log.New(os.Stderr, "[ERROR] ", log.Ldate|log.Ltime|log.Lshortfile)
 		Error.SetOutput(Writer)
 	}
 
-	if mode >= 2 {
-		Warn = log.New(os.Stdout, "[WARNING] ", log.Ldate|log.Ltime|log.Lshortfile)
-		Warn.SetOutput(Writer)
-	}
-
-	if mode >= 3 {
-		Info = log.New(os.Stdout, "[INFO] ", log.Ldate|log.Ltime|log.Lshortfile)
-		Info.SetOutput(Writer)
-	}
-
-	if mode >= 4 {
-		Verbose = log.New(os.Stdout, "[VERBOSE] ", log.Ldate|log.Ltime|log.Lshortfile)
-		Verbose.SetOutput(Writer)
-	}
-
 	if mode > 4 {
-		Warn.Println("Logging mode is greater than 4. Logging mode is set to the maximum level.")
+		Warn.Println("LOG_LEVEL is greater than 4. Logging mode is set to the maximum level.")
 	}
 
 	return nil

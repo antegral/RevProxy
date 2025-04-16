@@ -22,21 +22,18 @@ func NewProxy(targetHost string) (*httputil.ReverseProxy, error) {
 func RequestHandler(proxy *httputil.ReverseProxy, password string, proxyUrl *url.URL) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		inputToken := r.Header.Get("X-RevProxy-Token")
-		isCorrectPassword := subtle.ConstantTimeCompare([]byte(inputToken), []byte(password)) == 1
+		isCorrectPassword := password == "" || subtle.ConstantTimeCompare([]byte(inputToken), []byte(password)) == 1
 
 		r.Header.Set("Host", proxyUrl.Hostname())
 		r.Host = proxyUrl.Hostname()
 
-		if len(password) <= 0 {
-			Log.Info.Print("[", r.Method, "/OK] ", r.RemoteAddr, " > ", r.RequestURI)
-			proxy.ServeHTTP(w, r)
-		} else if inputToken != password {
+		if !isCorrectPassword {
 			Log.Warn.Print("[", r.Method, "/FAIL] ", r.RemoteAddr, " > ", r.RequestURI)
 			w.WriteHeader(http.StatusForbidden)
 			w.Write([]byte("Forbidden Page"))
-		} else {
-			Log.Info.Print("[", r.Method, "/OK] ", r.RemoteAddr, " > ", r.RequestURI)
-			proxy.ServeHTTP(w, r)
 		}
+
+		Log.Info.Print("[", r.Method, "/OK] ", r.RemoteAddr, " > ", r.RequestURI)
+		proxy.ServeHTTP(w, r)
 	}
 }

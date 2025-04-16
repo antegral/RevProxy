@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 
 	Log "antegral.net/revproxy/src/Log"
 	ProxyModule "antegral.net/revproxy/src/Proxy"
-	"github.com/joho/godotenv"
 )
 
 var (
@@ -21,11 +21,14 @@ var (
 func main() {
 	flag.StringVar(&ListenPort, "listen", "", "Port to listen")
 	flag.StringVar(&ProxyTo, "address", "", "Address to proxy")
-	flag.StringVar(&Password, "password", "", "Header password (X-RevProxy-Token)")
-	flag.IntVar(&LoggingMode, "logging-mode", 3, "Logging mode")
 	flag.Parse()
 
-	Log.Init(LoggingMode)
+	logLevel := os.Getenv("LOG_LEVEL")
+	if logLevel == "" {
+		logLevel = "1"
+	}
+
+	Log.Init(logLevel)
 
 	Log.Info.Println("Starting RevProxy...")
 
